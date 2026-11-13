@@ -1,0 +1,13 @@
+(()=>{
+'use strict';
+const header=document.querySelector('.site-header'),menu=document.querySelector('.menu-btn');
+menu?.addEventListener('click',()=>{let open=header.classList.toggle('nav-open');menu.setAttribute('aria-expanded',String(open));menu.setAttribute('aria-label',open?'Zavřít menu':'Otevřít menu')});
+header?.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',()=>{header.classList.remove('nav-open');menu?.setAttribute('aria-expanded','false')}));
+const slider=document.querySelector('[data-slideshow]');
+if(slider){const items=[...slider.querySelectorAll('[data-slide]')],count=slider.querySelector('[data-counter]');let idx=0,id=null;const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const show=n=>{idx=(n+items.length)%items.length;items.forEach((s,i)=>{const active=i===idx;s.classList.toggle('is-active',active);s.setAttribute('aria-hidden',String(!active));s.tabIndex=active?0:-1});if(count)count.textContent=`${String(idx+1).padStart(2,'0')} / ${String(items.length).padStart(2,'0')}`};const stop=()=>{clearInterval(id);id=null},start=()=>{stop();if(!reduced&&!document.hidden&&items.length>1)id=setInterval(()=>show(idx+1),5500)};
+slider.querySelector('[data-prev]')?.addEventListener('click',()=>{show(idx-1);start()});slider.querySelector('[data-next]')?.addEventListener('click',()=>{show(idx+1);start()});slider.addEventListener('mouseenter',stop);slider.addEventListener('mouseleave',start);slider.addEventListener('focusin',stop);slider.addEventListener('focusout',e=>{if(!slider.contains(e.relatedTarget))start()});document.addEventListener('visibilitychange',()=>document.hidden?stop():start());show(0);start();}
+const box=document.querySelector('.lightbox');if(box){const img=box.querySelector('img'),cap=box.querySelector('p');const close=()=>{box.hidden=true;img.removeAttribute('src');document.body.style.overflow=''};document.querySelectorAll('[data-lightbox]').forEach(btn=>btn.addEventListener('click',()=>{img.src=btn.dataset.lightbox;img.alt=btn.dataset.alt||'';cap.textContent=img.alt;box.hidden=false;document.body.style.overflow='hidden';box.querySelector('.lightbox-close').focus()}));box.querySelector('.lightbox-close')?.addEventListener('click',close);box.addEventListener('click',e=>{if(e.target===box)close()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!box.hidden)close()})}
+const map=document.querySelector('[data-map-load]');map?.addEventListener('click',()=>{const iframe=map.closest('.map-shell')?.querySelector('iframe');if(!iframe)return;iframe.src=map.dataset.mapSrc;iframe.hidden=false;map.parentElement.hidden=true});
+const v=document.querySelector('.hero-video');if(v){v.addEventListener('error',()=>{v.style.display='none'},true)}
+})();
